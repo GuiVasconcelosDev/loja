@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR® — Performance Apparel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <a class="nav__brand" href="#">Noir<sup>®</sup></a>
+    <nav class="nav__meta">
+      <ul>
+        <li>Precision engineered</li>
+        <li>Essential</li>
+        <li>Proven</li>
+      </ul>
+      <ul>
+        <ul>
+            <li><a href="#shop">Shop</a></li>
+            <li><a href="gallery.html">Galeria 3D</a></li>
+            <li><a href="#about">Manifesto</a></li>
+    </ul>
+      </ul>
+    </nav>
+    <button class="nav__cart" id="cartToggle">Cart <span id="cartCount">0</span></button>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <img src="assets/hero.png" alt="Editorial NOIR" class="hero__img" />
+    <div class="hero__overlay"></div>
+
+    <div class="hero__side hero__side--right">
+      <p>Advanced engineering meets material excellence. Every piece tested for impact resistance. Precision optics drive performance forward.</p>
+      <span class="hero__year">Brasil — (2026)</span>
+    </div>
+
+    <div class="hero__bottom">
+      <h1>Noir<sup>®</sup></h1>
+      <p class="hero__tagline">
+        Performance apparel engineered for movement. Precision crafted textile,
+        tested for durability. Superior technology. Built for excellence.
+      </p>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <main class="shop" id="shop">
+    <div class="shop__head">
+      <h2>Collection <span>(01)</span></h2>
+      <div class="shop__filters" id="filters">
+        <button data-cat="" class="active">All</button>
+        <button data-cat="OUTERWEAR">Outerwear</button>
+        <button data-cat="TOPS">Tops</button>
+        <button data-cat="BOTTOMS">Bottoms</button>
+        <button data-cat="ACCESSORIES">Accessories</button>
+      </div>
+    </div>
+    <div class="shop__grid" id="productGrid"></div>
+  </main>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <p>
+      NOIR® é um estúdio de vestuário técnico. Cada peça nasce de engenharia de
+      materiais e é testada para resistência real. Tecnologia superior.
+      Construído para excelência.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <span>Noir<sup>®</sup> — © 2026</span>
+    <span>Precision engineered / Essential / Proven</span>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <aside class="cart" id="cartDrawer">
+    <div class="cart__head">
+      <h3>Cart</h3>
+      <button id="cartClose">×</button>
+    </div>
+    <div class="cart__items" id="cartItems"></div>
+    <div class="cart__foot">
+      <div class="cart__total">Total <strong id="cartTotal">R$ 0,00</strong></div>
+      <form id="checkoutForm">
+        <input type="text" id="fName" placeholder="Nome" required />
+        <input type="email" id="fEmail" placeholder="E-mail" required />
+        <input type="text" id="fAddress" placeholder="Endereço" required />
+        <button type="submit">Finalizar pedido</button>
+      </form>
+      <p class="cart__msg" id="cartMsg"></p>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/scroll-fx.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR® — Galeria 3D</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/gallery.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="nav__brand" href="index.html">Noir<sup>®</sup></a>
+    <nav class="nav__meta">
+      <ul>
+        <li>Precision engineered</li>
+        <li>Essential</li>
+        <li>Proven</li>
+      </ul>
+      <ul>
+        <li><a href="index.html">Shop</a></li>
+        <li><a href="index.html#about">Manifesto</a></li>
+      </ul>
+    </nav>
+    <button class="nav__cart" id="cartToggle">Cart <span id="cartCount">0</span></button>
+  </header>
+
+  <section class="g3d-hint">
+    <p>Role para girar a coleção</p>
+  </section>
+
+  <section class="g3d-wrap" id="g3dWrap">
+    <div class="g3d-viewport">
+      <div class="g3d-stage" id="g3dStage">
+        <p class="g3d-loading">Carregando coleção…</p>
+      </div>
+      <div class="g3d-progress"><div class="g3d-progress-bar" id="g3dProgressBar"></div></div>
+    </div>
+  </section>
+
+  <section class="g3d-hint g3d-hint--end">
+    <p>Fim da coleção</p>
+    <a href="index.html" class="g3d-back">Ver vitrine completa →</a>
+  </section>
+
+  <footer class="footer">
+    <span>Noir<sup>®</sup> — © 2026</span>
+    <span>Precision engineered / Essential / Proven</span>
+  </footer>
+
+  <aside class="cart" id="cartDrawer">
+    <div class="cart__head">
+      <h3>Cart</h3>
+      <button id="cartClose">×</button>
+    </div>
+    <div class="cart__items" id="cartItems"></div>
+    <div class="cart__foot">
+      <div class="cart__total">Total <strong id="cartTotal">R$ 0,00</strong></div>
+      <form id="checkoutForm">
+        <input type="text" id="fName" placeholder="Nome" required />
+        <input type="email" id="fEmail" placeholder="E-mail" required />
+        <input type="text" id="fAddress" placeholder="Endereço" required />
+        <button type="submit">Finalizar pedido</button>
+      </form>
+      <p class="cart__msg" id="cartMsg"></p>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/gallery.js"></script>
+</body>
+</html>

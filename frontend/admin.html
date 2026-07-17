@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR® — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="nav__brand" href="index.html">Noir<sup>®</sup></a>
+  </header>
+
+  <main class="admin">
+    <!-- LOGIN -->
+    <section id="loginView">
+      <h1>Admin — Login</h1>
+      <form class="admin__login" id="loginForm">
+        <input type="text" id="lUser" placeholder="Usuário" required />
+        <input type="password" id="lPass" placeholder="Senha" required />
+        <button class="btn" type="submit">Entrar</button>
+      </form>
+      <p class="admin__msg" id="loginMsg"></p>
+    </section>
+
+    <!-- PAINEL -->
+    <section id="panelView" hidden>
+      <div class="admin__bar">
+        <h1>Produtos</h1>
+        <button class="btn btn--ghost" id="logoutBtn">Sair</button>
+      </div>
+
+      <form class="admin__form" id="productForm">
+        <input type="hidden" id="pId" />
+        <input type="text" id="pName" placeholder="Nome" required />
+        <input type="number" id="pPrice" placeholder="Preço" step="0.01" min="0.01" required />
+        <select id="pCategory" required>
+          <option value="OUTERWEAR">Outerwear</option>
+          <option value="TOPS">Tops</option>
+          <option value="BOTTOMS">Bottoms</option>
+          <option value="ACCESSORIES">Accessories</option>
+        </select>
+        <input type="text" id="pImage" placeholder="Imagem (ex: assets/p1.jpg)" />
+        <input type="number" id="pStock" placeholder="Estoque" min="0" required />
+        <label class="admin__check"><input type="checkbox" id="pFeatured" /> Destaque</label>
+        <textarea id="pDesc" placeholder="Descrição"></textarea>
+        <button class="btn" type="submit" id="saveBtn">Criar produto</button>
+        <button class="btn btn--ghost" type="button" id="cancelEdit" hidden>Cancelar edição</button>
+      </form>
+      <p class="admin__msg" id="panelMsg"></p>
+
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Destaque</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="productRows"></tbody>
+      </table>
+
+      <div class="admin__section">
+        <h1>Pedidos</h1>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Cliente</th><th>E-mail</th><th>Itens</th><th>Total</th><th>Data</th></tr>
+          </thead>
+          <tbody id="orderRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR® — Produto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="nav__brand" href="index.html">Noir<sup>®</sup></a>
+    <button class="nav__cart" id="cartToggle">Cart <span id="cartCount">0</span></button>
+  </header>
+
+  <main class="pdp" id="pdp">
+    <p style="padding:120px 28px;color:#8a8a90">Carregando…</p>
+  </main>
+
+  <footer class="footer">
+    <span>Noir<sup>®</sup> — © 2026</span>
+    <span><a href="index.html">← Voltar à coleção</a></span>
+  </footer>
+
+  <!-- mesmo drawer de carrinho do index -->
+  <aside class="cart" id="cartDrawer">
+    <div class="cart__head"><h3>Cart</h3><button id="cartClose">×</button></div>
+    <div class="cart__items" id="cartItems"></div>
+    <div class="cart__foot">
+      <div class="cart__total">Total <strong id="cartTotal">R$ 0,00</strong></div>
+      <form id="checkoutForm">
+        <input type="text" id="fName" placeholder="Nome" required />
+        <input type="email" id="fEmail" placeholder="E-mail" required />
+        <input type="text" id="fAddress" placeholder="Endereço" required />
+        <button type="submit">Finalizar pedido</button>
+      </form>
+      <p class="cart__msg" id="cartMsg"></p>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/product.js"></script>
+  <script src="js/scroll-fx.js"></script>
+</body>
+</html>

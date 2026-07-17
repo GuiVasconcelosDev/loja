@@ -1,0 +1,122 @@
+/* ---------- 3D RING GALLERY ---------- */
+.g3d-hint {
+  padding: 140px 28px 40px;
+  text-align: center;
+}
+.g3d-hint p {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.g3d-hint--end {
+  padding: 40px 28px 100px;
+}
+.g3d-back {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+}
+
+.g3d-wrap {
+  position: relative;
+}
+
+.g3d-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  perspective: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.g3d-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.g3d-loading {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.g3d-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+}
+
+.g3d-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+
+.g3d-info { padding: 14px; }
+.g3d-cat {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.g3d-info h3 {
+  font-family: "Archivo", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 6px 0 4px;
+}
+.g3d-price { font-size: 12px; color: var(--muted); }
+
+.g3d-progress {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: var(--line);
+}
+.g3d-progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .g3d-card { width: 190px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g3d-viewport {
+    position: relative;
+    height: auto;
+    perspective: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
+    padding: 28px;
+  }
+  .g3d-card { position: relative; top: auto; left: auto; transform: none !important; filter: none !important; opacity: 1 !important; }
+  .g3d-progress { display: none; }
+}
