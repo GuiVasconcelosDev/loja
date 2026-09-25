@@ -34,9 +34,10 @@ public class DataSeeder implements CommandLineRunner {
     private Product p(String name, String desc, String price, Category cat, String img, int stock, boolean featured) {
 
         if (userRepository.count() == 0) {
+            String adminPassword = System.getenv().getOrDefault("APP_ADMIN_PASSWORD", "change-me-dev-only-password");
             userRepository.save(com.noirstudio.loja.model.AppUser.builder()
                     .username("admin")
-                    .password(passwordEncoder.encode("adminDev"))
+                    .password(passwordEncoder.encode(adminPassword))
                     .role("ADMIN")
                     .build());
         }
