@@ -18,5 +18,5 @@ spring:
 
 app:
   jwt:
-    secret: "eu-sou-administrador-do-gol-de-2006-que-teve-o-maior"
-    expiration-ms: 86400000   # 24h
+    secret: ${APP_JWT_SECRET:change-me-dev-only-secret-32bytes-minimum-required}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}   # 24h

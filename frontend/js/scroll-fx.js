@@ -1,68 +1,129 @@
-/* Efeito de inclinação 3D na hero conforme o scroll */
+/* ---------- HERO 3D SCROLL ---------- */
+
 const heroImg = document.querySelector(".hero__img");
 const heroBottom = document.querySelector(".hero__bottom");
 const heroSide = document.querySelector(".hero__side");
 const hero = document.querySelector(".hero");
 
-let ticking = false;
+let heroTicking = false;
+
+function clamp(value, minimum, maximum) {
+  return Math.min(Math.max(value, minimum), maximum);
+}
 
 function updateHeroTilt() {
-  if (!hero) { ticking = false; return; }
+  if (!hero) {
+    heroTicking = false;
+    return;
+  }
 
-  const scrollY = window.scrollY;
+  const heroRect = hero.getBoundingClientRect();
   const heroHeight = hero.offsetHeight || window.innerHeight;
-  const progress = Math.min(scrollY / heroHeight, 1);
+
+  /*
+   * Calcula o progresso somente dentro da hero.
+   * O valor sempre permanece entre 0 e 1.
+   */
+  const progress = clamp(-heroRect.top / heroHeight, 0, 1);
 
   if (heroImg) {
     const rotateX = progress * 25;
     const scale = 1 - progress * 0.12;
     const translateZ = progress * -150;
-    heroImg.style.transform = `perspective(1200px) rotateX(${rotateX}deg) scale(${scale}) translateZ(${translateZ}px)`;
+
+    heroImg.style.transform = `
+      perspective(1200px)
+      rotateX(${rotateX}deg)
+      scale(${scale})
+      translateZ(${translateZ}px)
+    `;
   }
 
   if (heroBottom) {
-    heroBottom.style.transform = `translateY(${progress * -40}px) translateZ(${progress * 60}px)`;
-    heroBottom.style.opacity = String(1 - progress * 1.3);
+    heroBottom.style.transform = `
+      translateY(${progress * -40}px)
+      translateZ(${progress * 60}px)
+    `;
+
+    // Permanece visível durante toda a rolagem
+    heroBottom.style.opacity = "1";
   }
 
   if (heroSide) {
-    heroSide.style.transform = `translateY(${progress * -60}px)`;
-    heroSide.style.opacity = String(1 - progress * 1.5);
+    heroSide.style.transform = `
+      translateY(${progress * -60}px)
+    `;
+
+    // Permanece visível durante toda a rolagem
+    heroSide.style.opacity = "1";
   }
 
-  ticking = false;
+  heroTicking = false;
 }
 
-window.addEventListener("scroll", () => {
-  if (!ticking) {
-    requestAnimationFrame(updateHeroTilt);
-    ticking = true;
-  }
-}, { passive: true });
+function requestHeroUpdate() {
+  if (heroTicking) return;
+
+  heroTicking = true;
+  requestAnimationFrame(updateHeroTilt);
+}
+
+window.addEventListener("scroll", requestHeroUpdate, {
+  passive: true,
+});
+
+window.addEventListener("resize", requestHeroUpdate);
 
 updateHeroTilt();
 
-/* Cards e texto do manifesto giram em 3D ao entrar na tela */
+/* ---------- REVEAL DOS CARDS E MANIFESTO ---------- */
+
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in-view");
-        revealObserver.unobserve(entry.target);
-      }
+      if (!entry.isIntersecting) return;
+
+      entry.target.classList.add("in-view");
+
+      /*
+       * Para de observar após a primeira entrada.
+       * Dessa forma, a classe nunca é removida.
+       */
+      revealObserver.unobserve(entry.target);
     });
   },
-  { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+  {
+    threshold: 0.15,
+    rootMargin: "0px 0px -60px 0px",
+  }
 );
 
 function observeRevealTargets() {
-  document.querySelectorAll(".card:not(.in-view)").forEach((el) => revealObserver.observe(el));
-  document.querySelectorAll(".about p:not(.in-view)").forEach((el) => revealObserver.observe(el));
+  document
+    .querySelectorAll(".card:not(.in-view)")
+    .forEach((element) => {
+      revealObserver.observe(element);
+    });
+
+  document
+    .querySelectorAll(".about p:not(.in-view)")
+    .forEach((element) => {
+      revealObserver.observe(element);
+    });
 }
 
-if (typeof grid !== "undefined" && grid) {
-  const gridObserver = new MutationObserver(() => observeRevealTargets());
-  gridObserver.observe(grid, { childList: true });
+/*
+ * Observa produtos inseridos dinamicamente pela API.
+ */
+const revealMutationObserver = new MutationObserver(() => {
+  observeRevealTargets();
+});
+
+if (document.body) {
+  revealMutationObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
 }
 
 observeRevealTargets();
