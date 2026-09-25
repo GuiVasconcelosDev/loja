@@ -418,41 +418,35 @@ button { font-family: inherit; cursor: pointer; }
 .admin__check { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
 
 /* ---------- 3D SCROLL EFFECTS ---------- */
-body {
-  perspective: 1800px;
-}
-
-.hero {
-  transform-style: preserve-3d;
-}
-
-.hero__img {
-  transform-origin: 50% 0%;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.hero__bottom,
-.hero__side {
-  will-change: transform;
-}
-
 .card {
   opacity: 0;
-  transform: perspective(1000px) rotateX(35deg) rotateY(-8deg) translateY(80px) translateZ(-100px);
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease;
+  visibility: visible;
+  transform: perspective(1000px)
+    rotateX(35deg)
+    rotateY(-8deg)
+    translateY(80px)
+    translateZ(-100px);
+  transition:
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.9s ease;
   transform-style: preserve-3d;
 }
 
 .card.in-view {
   opacity: 1;
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) translateZ(0);
+  transform: perspective(1000px)
+    rotateX(0deg)
+    rotateY(0deg)
+    translateY(0)
+    translateZ(0);
 }
 
 .about p {
   opacity: 0;
   transform: perspective(1000px) rotateX(20deg) translateY(40px);
-  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
+  transition:
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1s ease;
 }
 
 .about p.in-view {
