@@ -18,5 +18,5 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:change-me-dev-only-secret-32bytes-minimum-required}
+    secret: ${APP_JWT_SECRET:app_jwt_secret_32bytes_minimum_required}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}   # 24h
