@@ -416,6 +416,9 @@ button { font-family: inherit; cursor: pointer; }
 .admin__msg { font-size: 12px; color: var(--accent); margin: 12px 0; min-height: 16px; }
 .admin__section { margin-top: 56px; }
 .admin__check { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.admin__upload { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+.admin__upload img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; }
+.admin__upload .admin__msg { margin: 0; }
 
 /* ---------- 3D SCROLL EFFECTS ---------- */
 .card {

@@ -41,7 +41,12 @@
           <option value="BOTTOMS">Bottoms</option>
           <option value="ACCESSORIES">Accessories</option>
         </select>
-        <input type="text" id="pImage" placeholder="Imagem (ex: assets/p1.jpg)" />
+        <input type="hidden" id="pImage" />
+        <div class="admin__upload">
+          <input type="file" id="pImageFile" accept="image/png,image/jpeg,image/webp,image/gif" />
+          <img id="pImagePreview" alt="Pré-visualização" hidden />
+          <span id="pImageStatus" class="admin__msg"></span>
+        </div>
         <input type="number" id="pStock" placeholder="Estoque" min="0" required />
         <label class="admin__check"><input type="checkbox" id="pFeatured" /> Destaque</label>
         <textarea id="pDesc" placeholder="Descrição"></textarea>

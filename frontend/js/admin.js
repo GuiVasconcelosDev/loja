@@ -99,22 +99,81 @@ function startEdit(p) {
   document.getElementById("pStock").value = p.stock;
   document.getElementById("pFeatured").checked = p.featured;
   document.getElementById("pDesc").value = p.description ?? "";
+  showImagePreview(p.imageUrl);
   saveBtn.textContent = "Salvar alterações";
   cancelEdit.hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+/* ---------- UPLOAD DE IMAGEM ---------- */
+const pImage = document.getElementById("pImage");
+const pImageFile = document.getElementById("pImageFile");
+const pImagePreview = document.getElementById("pImagePreview");
+const pImageStatus = document.getElementById("pImageStatus");
+let uploadingImage = false;
+
+function showImagePreview(url) {
+  if (url) {
+    pImagePreview.src = url;
+    pImagePreview.hidden = false;
+  } else {
+    pImagePreview.hidden = true;
+    pImagePreview.removeAttribute("src");
+  }
+}
+
+pImageFile.addEventListener("change", async () => {
+  const file = pImageFile.files[0];
+  if (!file) return;
+
+  uploadingImage = true;
+  saveBtn.disabled = true;
+  pImageStatus.textContent = "Enviando imagem…";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await guard(
+      await fetch(`${API}/uploads`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token()}` },
+        body: formData,
+      })
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      throw new Error(err?.message || "Falha ao enviar imagem");
+    }
+    const data = await res.json();
+    pImage.value = data.url;
+    showImagePreview(data.url);
+    pImageStatus.textContent = "Imagem enviada.";
+  } catch (err) {
+    if (err.message !== "unauthorized") pImageStatus.textContent = err.message;
+  } finally {
+    uploadingImage = false;
+    saveBtn.disabled = false;
+  }
+});
 
 cancelEdit.addEventListener("click", resetForm);
 
 function resetForm() {
   document.getElementById("productForm").reset();
   document.getElementById("pId").value = "";
+  pImage.value = "";
+  pImageStatus.textContent = "";
+  showImagePreview(null);
   saveBtn.textContent = "Criar produto";
   cancelEdit.hidden = true;
 }
 
 document.getElementById("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (uploadingImage) {
+    panelMsg.textContent = "Aguarde o envio da imagem terminar.";
+    return;
+  }
   const id = document.getElementById("pId").value;
   const body = JSON.stringify({
     name: document.getElementById("pName").value,
