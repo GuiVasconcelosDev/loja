@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
     url: jdbc:h2:mem:lojadb
     driver-class-name: org.h2.Driver
@@ -15,8 +17,14 @@ spring:
     console:
       enabled: true
       path: /h2
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 app:
+  upload:
+    dir: ${APP_UPLOAD_DIR:uploads}
   jwt:
     secret: ${APP_JWT_SECRET:app_jwt_secret_32bytes_minimum_required}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}   # 24h
