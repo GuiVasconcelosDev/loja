@@ -10,6 +10,13 @@ const saveBtn = document.getElementById("saveBtn");
 const cancelEdit = document.getElementById("cancelEdit");
 
 const brl = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+})[character]);
 const token = () => localStorage.getItem("noir_token");
 const authHeaders = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${token()}` });
 
@@ -68,15 +75,15 @@ async function loadProducts() {
     .map(
       (p) => `
     <tr>
-      <td>${p.id}</td>
-      <td>${p.name}</td>
-      <td>${p.category}</td>
-      <td>${brl(p.price)}</td>
-      <td>${p.stock}</td>
+      <td>${escapeHtml(p.id)}</td>
+      <td>${escapeHtml(p.name)}</td>
+      <td>${escapeHtml(p.category)}</td>
+      <td>${escapeHtml(brl(p.price))}</td>
+      <td>${escapeHtml(p.stock)}</td>
       <td>${p.featured ? "★" : "—"}</td>
       <td>
-        <button data-edit="${p.id}">Editar</button>
-        <button data-del="${p.id}">Excluir</button>
+        <button data-edit="${escapeHtml(p.id)}">Editar</button>
+        <button data-del="${escapeHtml(p.id)}">Excluir</button>
       </td>
     </tr>`
     )
@@ -221,21 +228,34 @@ async function loadOrders() {
   try {
     const res = await guard(await fetch(`${API}/orders`, { headers: authHeaders() }));
     const orders = await res.json();
-    orderRows.innerHTML = orders.length
-      ? orders
-          .map(
-            (o) => `
-      <tr>
-        <td>${o.id}</td>
-        <td>${o.customerName}</td>
-        <td>${o.customerEmail}</td>
-        <td>${o.items.map((i) => `${i.quantity}× ${i.productName}`).join(", ")}</td>
-        <td>${brl(o.total)}</td>
-        <td>${new Date(o.createdAt).toLocaleString("pt-BR")}</td>
-      </tr>`
-          )
-          .join("")
-      : `<tr><td colspan="6" style="color:#8a8a90">Nenhum pedido ainda.</td></tr>`;
+    const rows = orders.map((order) => {
+      const row = document.createElement("tr");
+      const values = [
+        order.id,
+        order.customerName,
+        order.customerEmail,
+        order.items.map((item) => `${item.quantity}× ${item.productName}`).join(", "),
+        brl(order.total),
+        new Date(order.createdAt).toLocaleString("pt-BR"),
+      ];
+      values.forEach((value) => {
+        const cell = document.createElement("td");
+        cell.textContent = String(value ?? "");
+        row.append(cell);
+      });
+      return row;
+    });
+
+    if (rows.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.style.color = "#8a8a90";
+      cell.textContent = "Nenhum pedido ainda.";
+      row.append(cell);
+      rows.push(row);
+    }
+    orderRows.replaceChildren(...rows);
   } catch { /* guard já tratou */ }
 }
 
