@@ -24,7 +24,7 @@ E-commerce full-stack de uma marca de streetwear/technical apparel fictícia, co
 **Backend**
 - Java 25
 - Spring Boot 4.1 (Web MVC, Data JPA, Security, Validation)
-- Banco H2 em memória (+ console H2 habilitado)
+- Banco H2 em memória (console administrativo desabilitado)
 - JJWT (`io.jsonwebtoken`) para geração/validação de tokens
 - Lombok
 
@@ -66,7 +66,7 @@ loja/
 
 ### Pré-requisitos
 - JDK 25+
-- Maven (ou use o wrapper `./mvnw` incluso)
+- Maven
 - Um servidor estático simples para o frontend (ex.: extensão *Live Server* do VS Code) — o frontend não tem build
 
 ### 1. Backend
@@ -74,16 +74,16 @@ loja/
 ```bash
 cd backend
 
-# variáveis de ambiente (recomendado definir as suas)
-export APP_JWT_SECRET="uma-chave-secreta-com-pelo-menos-32-bytes"
-export APP_ADMIN_PASSWORD="uma-senha-forte-para-o-admin"
+# segredos obrigatórios; gere valores novos para cada ambiente
+export APP_JWT_SECRET="$(openssl rand -base64 48)"
+export APP_ADMIN_PASSWORD="$(openssl rand -base64 24)"
 
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 A API sobe em `http://localhost:8080`. O H2 em memória é recriado a cada start e populado automaticamente com produtos de exemplo e o usuário `admin`.
 
-Console do H2 (opcional): `http://localhost:8080/h2` — JDBC URL `jdbc:h2:mem:lojadb`, usuário `sa`, sem senha.
+O console web do H2 não é incluído nem exposto pela aplicação.
 
 ### 2. Frontend
 
@@ -119,13 +119,13 @@ O login (`POST /api/auth/login`) retorna um token JWT que deve ser enviado no he
 
 ## 🔧 Variáveis de ambiente
 
-| Variável                 | Descrição                              | Padrão (dev)                              |
-|---------------------------|-----------------------------------------|--------------------------------------------|
-| `APP_JWT_SECRET`          | Chave usada para assinar os tokens JWT | `app_jwt_secret_32bytes_minimum_required` |
-| `APP_JWT_EXPIRATION_MS`   | Validade do token em ms                | `86400000` (24h)                          |
-| `APP_ADMIN_PASSWORD`      | Senha do usuário admin gerado no seed  | `change-me-dev-only-password`             |
+| Variável                 | Descrição                              | Padrão |
+|---------------------------|-----------------------------------------|--------|
+| `APP_JWT_SECRET`          | Chave JWT; obrigatória, use valor aleatório com pelo menos 32 bytes | Sem padrão |
+| `APP_JWT_EXPIRATION_MS`   | Validade do token em ms                | `86400000` (24h) |
+| `APP_ADMIN_PASSWORD`      | Senha inicial do admin; obrigatória e com pelo menos 12 caracteres | Sem padrão |
 
-> Os valores padrão são apenas para desenvolvimento local — defina os seus antes de expor o projeto.
+> Não reutilize segredos entre ambientes. A aplicação não inicia sem a chave JWT e a senha administrativa configuradas.
 
 ---
 
