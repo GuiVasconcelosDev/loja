@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = window.NOIR_API_BASE || `${location.protocol}//${location.hostname}:8080/api`;
 
 const loginView = document.getElementById("loginView");
 const panelView = document.getElementById("panelView");
@@ -17,35 +17,58 @@ const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character
   '"': "&quot;",
   "'": "&#39;",
 })[character]);
-const token = () => localStorage.getItem("noir_token");
-const authHeaders = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${token()}` });
+
+async function csrfToken() {
+  const res = await fetch(`${API}/auth/csrf`, { credentials: "include" });
+  if (!res.ok) throw new Error("Falha ao iniciar a proteção da sessão.");
+  return (await res.json()).token;
+}
+
+const mutationHeaders = async () => ({
+  "Content-Type": "application/json",
+  "X-XSRF-TOKEN": await csrfToken(),
+});
 
 /* ---------- AUTH ---------- */
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   loginMsg.textContent = "Autenticando…";
   try {
+    const csrf = await csrfToken();
     const res = await fetch(`${API}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json", "X-XSRF-TOKEN": csrf },
       body: JSON.stringify({
         username: document.getElementById("lUser").value,
         password: document.getElementById("lPass").value,
       }),
     });
+    if (res.status === 429) throw new Error("Muitas tentativas. Aguarde antes de tentar novamente.");
     if (!res.ok) throw new Error("Usuário ou senha inválidos");
-    const data = await res.json();
-    localStorage.setItem("noir_token", data.token);
     showPanel();
   } catch (err) {
     loginMsg.textContent = err.message;
   }
 });
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("noir_token");
-  panelView.hidden = true;
-  loginView.hidden = false;
+document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+  const logoutButton = e.currentTarget;
+  logoutButton.disabled = true;
+  try {
+    const res = await fetch(`${API}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "X-XSRF-TOKEN": await csrfToken() },
+    });
+    if (!res.ok) throw new Error();
+    panelView.hidden = true;
+    loginView.hidden = false;
+  } catch {
+    panelMsg.textContent = "Não foi possível encerrar a sessão.";
+  } finally {
+    logoutButton.disabled = false;
+  }
 });
 
 function showPanel() {
@@ -58,7 +81,6 @@ function showPanel() {
 /** trata 401/403 globalmente */
 async function guard(res) {
   if (res.status === 401 || res.status === 403) {
-    localStorage.removeItem("noir_token");
     panelView.hidden = true;
     loginView.hidden = false;
     loginMsg.textContent = "Sessão expirada. Entre novamente.";
@@ -143,7 +165,8 @@ pImageFile.addEventListener("change", async () => {
     const res = await guard(
       await fetch(`${API}/uploads`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token()}` },
+        credentials: "include",
+        headers: { "X-XSRF-TOKEN": await csrfToken() },
         body: formData,
       })
     );
@@ -196,7 +219,8 @@ document.getElementById("productForm").addEventListener("submit", async (e) => {
     const res = await guard(
       await fetch(id ? `${API}/products/${id}` : `${API}/products`, {
         method: id ? "PUT" : "POST",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: await mutationHeaders(),
         body,
       })
     );
@@ -213,7 +237,11 @@ async function deleteProduct(id) {
   if (!confirm(`Excluir produto #${id}?`)) return;
   try {
     const res = await guard(
-      await fetch(`${API}/products/${id}`, { method: "DELETE", headers: authHeaders() })
+      await fetch(`${API}/products/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: await mutationHeaders(),
+      })
     );
     if (!res.ok && res.status !== 204) throw new Error("Erro ao excluir");
     panelMsg.textContent = "Produto excluído.";
@@ -226,7 +254,7 @@ async function deleteProduct(id) {
 /* ---------- PEDIDOS ---------- */
 async function loadOrders() {
   try {
-    const res = await guard(await fetch(`${API}/orders`, { headers: authHeaders() }));
+    const res = await guard(await fetch(`${API}/orders`, { credentials: "include" }));
     const orders = await res.json();
     const rows = orders.map((order) => {
       const row = document.createElement("tr");
@@ -260,4 +288,11 @@ async function loadOrders() {
 }
 
 /* ---------- INIT ---------- */
-if (token()) showPanel();
+async function restoreSession() {
+  try {
+    const res = await fetch(`${API}/orders`, { credentials: "include" });
+    if (res.ok) showPanel();
+  } catch { /* mantém a tela de login */ }
+}
+
+restoreSession();

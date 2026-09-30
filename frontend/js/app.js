@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = window.NOIR_API_BASE || `${location.protocol}//${location.hostname}:8080/api`;
 
 const grid = document.getElementById("productGrid");
 const filters = document.getElementById("filters");
@@ -13,6 +13,11 @@ let cart = JSON.parse(localStorage.getItem("noir_cart") || "[]");
 
 const brl = (v) =>
   Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+async function csrfToken() {
+  const res = await fetch(`${API}/auth/csrf`, { credentials: "include" });
+  if (!res.ok) throw new Error("Falha ao iniciar a proteção do pedido.");
+  return (await res.json()).token;
+}
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
   "<": "&lt;",
@@ -148,9 +153,11 @@ if (checkoutForm) {
     }
     cartMsg.textContent = "Enviando…";
     try {
+      const csrf = await csrfToken();
       const res = await fetch(`${API}/orders`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        headers: { "Content-Type": "application/json", "X-XSRF-TOKEN": csrf },
         body: JSON.stringify({
           customerName: document.getElementById("fName").value,
           customerEmail: document.getElementById("fEmail").value,

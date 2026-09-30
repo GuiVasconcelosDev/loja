@@ -1,6 +1,6 @@
 /* ---------- 3D RING GALLERY ---------- */
 
-const G3D_API = "http://localhost:8080/api";
+const G3D_API = window.NOIR_API_BASE || `${location.protocol}//${location.hostname}:8080/api`;
 const g3dEscapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
   "<": "&lt;",
