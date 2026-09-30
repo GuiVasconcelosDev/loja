@@ -1,6 +1,13 @@
 /* ---------- 3D RING GALLERY ---------- */
 
 const G3D_API = "http://localhost:8080/api";
+const g3dEscapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+})[character]);
 
 function g3dBrl(value) {
   const numericValue = Number(value);
@@ -70,23 +77,23 @@ function g3dBuild(products) {
       return `
         <a
           class="g3d-card"
-          href="product.html?id=${product.id}"
-          data-angle="${angle}"
-          data-price="${product.price}"
+          href="product.html?id=${g3dEscapeHtml(product.id)}"
+          data-angle="${g3dEscapeHtml(angle)}"
+          data-price="${g3dEscapeHtml(product.price)}"
           data-centered="false"
         >
           <img
-            src="${product.imageUrl}"
-            alt="${product.name}"
+            src="${g3dEscapeHtml(product.imageUrl)}"
+            alt="${g3dEscapeHtml(product.name)}"
             loading="lazy"
           />
 
           <div class="g3d-info">
             <span class="g3d-cat">
-              ${product.category}
+              ${g3dEscapeHtml(product.category)}
             </span>
 
-            <h3>${product.name}</h3>
+            <h3>${g3dEscapeHtml(product.name)}</h3>
 
             <span class="g3d-price">
               ${g3dBrl(product.price)}
