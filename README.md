@@ -77,6 +77,7 @@ cd backend
 # segredos obrigatórios; gere valores novos para cada ambiente
 export APP_JWT_SECRET="$(openssl rand -base64 48)"
 export APP_ADMIN_PASSWORD="$(openssl rand -base64 24)"
+export APP_REQUIRE_HTTPS=false
 
 mvn spring-boot:run
 ```
@@ -87,7 +88,7 @@ O console web do H2 não é incluído nem exposto pela aplicação.
 
 ### 2. Frontend
 
-O frontend espera a API em `http://localhost:8080/api` (constante `API` no topo de cada arquivo JS). Sirva a pasta `frontend/` com qualquer servidor estático, por exemplo:
+No ambiente local, a API usa o mesmo host da página na porta `8080`. Sirva a pasta `frontend/` com qualquer servidor estático, por exemplo:
 
 ```bash
 cd frontend
@@ -95,7 +96,7 @@ npx serve -l 5500
 # ou abra com a extensão Live Server do VS Code na porta 5500
 ```
 
-O CORS do backend já libera `http://localhost:5500`, `http://127.0.0.1:5500` e `http://localhost:3000` — ajuste em `SecurityConfig` caso use outra porta.
+O CORS permite credenciais apenas das origens locais `http://localhost:5500`, `http://127.0.0.1:5500` e `http://localhost:3000`. Como os cookies usam `SameSite=Strict`, frontend e API devem usar o mesmo host. Configure `window.NOIR_API_BASE` se a API estiver em outro endereço.
 
 Acesse:
 - `index.html` — loja
@@ -113,7 +114,7 @@ Acesse:
 | `POST /api/orders`        | Público       |
 | Demais rotas (CRUD admin, listagem de pedidos) | `ROLE_ADMIN` (JWT) |
 
-O login (`POST /api/auth/login`) retorna um token JWT que deve ser enviado no header `Authorization` nas rotas administrativas.
+O login (`POST /api/auth/login`) define um cookie JWT `HttpOnly`, `Secure` e `SameSite=Strict`; o token não é exposto ao JavaScript. Operações mutáveis exigem o token CSRF obtido em `GET /api/auth/csrf`.
 
 ---
 
@@ -124,8 +125,19 @@ O login (`POST /api/auth/login`) retorna um token JWT que deve ser enviado no he
 | `APP_JWT_SECRET`          | Chave JWT; obrigatória, use valor aleatório com pelo menos 32 bytes | Sem padrão |
 | `APP_JWT_EXPIRATION_MS`   | Validade do token em ms                | `86400000` (24h) |
 | `APP_ADMIN_PASSWORD`      | Senha inicial do admin; obrigatória e com pelo menos 12 caracteres | Sem padrão |
+| `APP_AUTH_COOKIE_SECURE`  | Exigir atributo `Secure` no cookie de autenticação | `true` |
+| `APP_REQUIRE_HTTPS`       | Redirecionar todas as requisições para HTTPS | `true` |
 
 > Não reutilize segredos entre ambientes. A aplicação não inicia sem a chave JWT e a senha administrativa configuradas.
+
+## 🔒 Deploy seguro
+
+- Termine TLS em um proxy reverso e defina `APP_REQUIRE_HTTPS=true` e `APP_AUTH_COOKIE_SECURE=true`.
+- Mantenha o backend acessível apenas pelo proxy. Como `server.forward-headers-strategy` usa cabeçalhos encaminhados, o proxy deve remover valores recebidos do cliente e definir seus próprios `Forwarded`/`X-Forwarded-*`.
+- Configure `window.NOIR_API_BASE` antes dos scripts para apontar à API HTTPS na mesma origem do site, por exemplo `https://loja.exemplo.com/api`. Atualize também as origens CORS em `SecurityConfig`.
+- O limitador local bloqueia após 8 logins ou 20 pedidos por minuto por IP, por instância. Atrás de proxy ou com múltiplas instâncias, configure limites equivalentes no proxy/gateway; não confie em `X-Forwarded-For` recebido diretamente da internet.
+- Se o navegador local não aceitar cookies seguros em `localhost`, use `APP_AUTH_COOKIE_SECURE=false` somente no ambiente de desenvolvimento.
+- Para executar localmente sem TLS, defina `APP_REQUIRE_HTTPS=false`; não use essa exceção em ambientes publicados.
 
 ---
 
