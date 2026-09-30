@@ -1,6 +1,7 @@
 package com.noirstudio.loja.security;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
@@ -27,11 +29,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
+        String token = request.getCookies() == null ? null : Arrays.stream(request.getCookies())
+            .filter(cookie -> "noir_auth".equals(cookie.getName()))
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElse(null);
 
-        if (header != null && header.startsWith("Bearer ")) {
+        if (token != null && !token.isBlank()) {
             try {
-                String username = jwtService.extractUsername(header.substring(7));
+            String username = jwtService.extractUsername(token);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails user = userDetailsService.loadUserByUsername(username);
                     var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
