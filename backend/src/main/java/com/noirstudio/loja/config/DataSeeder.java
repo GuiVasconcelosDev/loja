@@ -27,6 +27,9 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String...args) {
        
         if(userRepository.count() == 0) {
+            if (adminPassword.length() < 12) {
+                throw new IllegalStateException("APP_ADMIN_PASSWORD must contain at least 12 characters");
+            }
             userRepository.save(com.noirstudio.loja.model.AppUser.builder()
             .username("admin")
             .password(passwordEncoder.encode(adminPassword))
