@@ -13,6 +13,13 @@ let cart = JSON.parse(localStorage.getItem("noir_cart") || "[]");
 
 const brl = (v) =>
   Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+})[character]);
 
 /* ---------- PRODUTOS ---------- */
 async function loadProducts(category = "") {
@@ -39,16 +46,16 @@ function renderProducts(products) {
     .map(
       (p) => `
     <article class="card">
-      <a href="product.html?id=${p.id}" class="card__link">
-        <div class="card__img"><img src="${p.imageUrl}" alt="${p.name}" loading="lazy" /></div>
+      <a href="product.html?id=${escapeHtml(p.id)}" class="card__link">
+        <div class="card__img"><img src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" /></div>
       </a>
       <div class="card__body">
-        <span class="card__cat">${p.category}</span>
-        <h3 class="card__name"><a href="product.html?id=${p.id}">${p.name}</a></h3>
-        <p class="card__desc">${p.description ?? ""}</p>
+        <span class="card__cat">${escapeHtml(p.category)}</span>
+        <h3 class="card__name"><a href="product.html?id=${escapeHtml(p.id)}">${escapeHtml(p.name)}</a></h3>
+        <p class="card__desc">${escapeHtml(p.description)}</p>
         <div class="card__foot">
           <span class="card__price">${brl(p.price)}</span>
-          <button class="card__add" data-id="${p.id}" ${p.stock < 1 ? "disabled" : ""}>
+          <button class="card__add" data-id="${escapeHtml(p.id)}" ${p.stock < 1 ? "disabled" : ""}>
             ${p.stock < 1 ? "Esgotado" : "Add +"}
           </button>
         </div>
@@ -110,13 +117,13 @@ function renderCart() {
       (i) => `
     <div class="cart-item">
       <div>
-        <div>${i.name}</div>
+        <div>${escapeHtml(i.name)}</div>
         <div style="color:#8a8a90">${brl(i.price)}</div>
       </div>
       <div class="cart-item__qty">
-        <button data-id="${i.id}" data-d="-1">−</button>
-        <span>${i.qty}</span>
-        <button data-id="${i.id}" data-d="1">+</button>
+        <button data-id="${escapeHtml(i.id)}" data-d="-1">−</button>
+        <span>${escapeHtml(i.qty)}</span>
+        <button data-id="${escapeHtml(i.id)}" data-d="1">+</button>
       </div>
     </div>`
     )
